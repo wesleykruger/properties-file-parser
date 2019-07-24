@@ -27,20 +27,18 @@ def translate_crons(cron_list):
     results_dict = {}
     for job in cron_list:
         cron_arr = cron_list[job].split(' ')
-        if len(cron_arr) == 6 and not cron_arr[5] == '2099':
-            results_dict[job] = convert_value(cron_arr)
-            print(job + ' - ' + results_dict[job])
-        elif len(cron_arr) == 7 and not cron_arr[6] == '2099':
-            results_dict[job] = convert_value(cron_arr)
-            print(job + ' - ' + results_dict[job])
+        results_dict[job] = convert_value(cron_arr)
+        print(job + ' | ' + results_dict[job])
 
 
 def convert_value(arr):
+    if arr[-1] == '2099':
+        return 'Turned Off' + ' | ' + ' '.join(arr)
     expression = '+'.join(arr)
     response = requests.get(
     'https://cronexpressiondescriptor.azurewebsites.net/api/descriptor/?expression={}&locale=en-US'.format(expression))
-    return response.text[response.text.index(':') + 1 : response.text.index('}') - 1].replace('"', '')
+    return response.text[response.text.index(':') + 1 : response.text.index('}') - 1].replace('"', '') + ' | ' + ' '.join(arr)
 
 
-cron_jobs = load_properties(Path('path/to/properties/file'))
+cron_jobs = load_properties(Path('C:/Users/wesleykruger/Documents/BBVA/properties/bbva_PROD/Base/BaseTitaniumEnvironmentProperties.properties'))
 translate_crons(cron_jobs)
